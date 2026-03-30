@@ -219,8 +219,9 @@ void SceneExtra::reset() {
     const auto type = static_cast<ElementType>(e);
     for (int i = 0; i < NUM_PER_ELEMENT; i++) {
       elements.emplace_back(
-          glm::vec2{std::cos(theta), std::sin(theta)} * radius + offset, 32,
-          random_vec2() * random_float(50.0f, 100.0f), type);
+          glm::vec2{std::cos(theta), std::sin(theta)} * radius + offset,
+          Element::DEFAULT_RADIUS, random_vec2() * random_float(50.0f, 100.0f),
+          type);
 
       theta += thetaStep;
     }

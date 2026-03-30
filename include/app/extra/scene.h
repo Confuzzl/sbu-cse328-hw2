@@ -35,6 +35,7 @@ struct SceneExtra {
   };
 
   struct Element : Ball {
+    static constexpr auto DEFAULT_RADIUS = 24;
     ElementType type;
 
     Element(const glm::vec2 pos, const float rad, const glm::vec2 vel,
@@ -49,7 +50,7 @@ struct SceneExtra {
   int counts[5]{0};
 
   struct Config {
-    float radius = 32;
+    float radius = Element::DEFAULT_RADIUS;
     glm::vec2 velocity{};
     ElementType type = ElementType::WOOD;
   } config{}, changeConfig{};
