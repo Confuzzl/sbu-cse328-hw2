@@ -138,7 +138,7 @@ struct TessellationProgram : BaseProgram<V, F> {
                            {GL_FRAGMENT_SHADER, F::name},
                            {GL_TESS_CONTROL_SHADER, T::controlName},
                            {GL_TESS_EVALUATION_SHADER, T::evalName}}),
-        tesselation{ID} {}
+        tesselation{::GL::Program::ID} {}
 };
 template <typename V, typename F, typename G>
 struct GeometryProgram : BaseProgram<V, F> {
@@ -148,7 +148,7 @@ struct GeometryProgram : BaseProgram<V, F> {
       : BaseProgram<V, F>({{GL_VERTEX_SHADER, V::name},
                            {GL_FRAGMENT_SHADER, F::name},
                            {GL_GEOMETRY_SHADER, G::name}}),
-        geometry{ID} {}
+        geometry{::GL::Program::ID} {}
 };
 } // namespace detail
 

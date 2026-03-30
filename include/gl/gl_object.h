@@ -2,6 +2,7 @@
 
 #include <glad/gl.h>
 
+#include "gl/vertex_layout.h"
 #include "util.h"
 
 namespace GL {

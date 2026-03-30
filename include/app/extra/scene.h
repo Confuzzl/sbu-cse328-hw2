@@ -48,8 +48,14 @@ struct SceneExtra {
   std::vector<Element> elements;
   int counts[5]{0};
 
+  enum struct State { ADD, REMOVE, CHANGE } state = State::ADD;
+
+  const Ball *hovering = nullptr;
+
   SceneExtra();
 
   void initialize();
   void update(const float dt);
+
+  void onClick();
 };
