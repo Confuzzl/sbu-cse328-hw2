@@ -7,6 +7,12 @@
 #include <string_view>
 #include <type_traits>
 
+#if defined(_MSC_VER) && !defined(__clang__) // MSVC
+#define UNREACHABLE __assume(false);
+#else // GCC, Clang
+#define UNREACHABLE __builtin_unreachable();
+#endif
+
 #define MOVE_ONLY_TYPE(type)                                                   \
   type(const type &) = delete;                                                 \
   type(type &&o) noexcept;                                                     \

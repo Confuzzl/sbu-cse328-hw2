@@ -80,8 +80,18 @@ Features or parts left unchecked here won't be graded!
 - [X] 4. More Bouncing Faces
   - [X] 8+ bouncing faces
   - [X] 16+ bonucing faces
-- [ ] 5. BONUS
-  - [ ] Please specify
+- [X] 5. BONUS
+  - GUI and keyboard shortcuts
+  - QOL features in required part:
+    - etc/config.txt fallback values
+    - ability to change ball parameters with GUI
+    - visual indicators for whether or not a ball is placeable
+  - New simulation: _Wuxing_ (Five Elements):
+    - Uses different shader to render balls
+      - Geometry shader
+      - Texture support
+    - Element balls interact with each other differently based on their element types
+    - Randomized ball velocity
 
 ## Usage
 

@@ -24,13 +24,15 @@ void Simulation::drawSideBar(const float dt) {
   ImGui::Text(foo.c_str());
 
   if (ImGui::BeginTabBar("tabs")) {
-    using P = std::tuple<const char *, Simulation *, ImGuiTabItemFlags>;
-    for (const auto [name, sim, flag] : {
-             P{"Basic", &app().simDefault, 0},
-             {"Extra 2D", &app().simExtra, ImGuiTabItemFlags_SetSelected},
-             //{"Extra 3D", &app().sim3D, 0},
+    using P = std::pair<const char *, Simulation *>;
+    for (const auto [name, sim] : {
+             P{"Basic", &app().simDefault}, {"Extra 2D", &app().simExtra},
+             //{"Extra 3D", &app().sim3D},
          }) {
-      if (ImGui::BeginTabItem(name, 0, flag)) {
+      if (ImGui::BeginTabItem(name,
+                              0 /*,
+                         app().currentSim == sim ? ImGuiTabItemFlags_SetSelected
+                         : 0*/)) {
         app().currentSim = sim;
         drawSideBarImpl();
         ImGui::EndTabItem();

@@ -16,11 +16,17 @@
 #include "util.h"
 
 Initializer::Initializer()
-    : input{{
-                {GLFW_KEY_ESCAPE, Key{[](const double) { app().close(); }}},
-            },
-            [](GLFWwindow *window, int button, int action, int mods) {},
-            [](GLFWwindow *window, double xoffset, double yoffset) {}} {
+    : input{
+          {
+              {GLFW_KEY_ESCAPE, Key{[](const double) { app().close(); }}},
+              //{GLFW_KEY_F1, Key{[](const double) {
+              //   app().currentSim = &app().simDefault;
+              // }}},
+              //{GLFW_KEY_F2,
+              // Key{[](const double) { app().currentSim = &app().simExtra; }}},
+          },
+          [](GLFWwindow *window, int button, int action, int mods) {},
+          [](GLFWwindow *window, double xoffset, double yoffset) {}} {
   if (!glfwInit()) {
     throw std::runtime_error{"GLFW FAILED TO INIT"};
   }
@@ -101,6 +107,8 @@ Initializer::Initializer()
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 450");
   ImGui::StyleColorsDark();
+
+  glLineWidth(2.0f);
 }
 Initializer::~Initializer() {
   ImGui_ImplOpenGL3_Shutdown();

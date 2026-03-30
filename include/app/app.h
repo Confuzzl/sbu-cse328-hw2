@@ -35,7 +35,7 @@ struct App : Initializer {
   SimulationExtra simExtra;
   // Simulation3D sim3D;
 
-  Simulation *currentSim = &simDefault;
+  Simulation *currentSim = &simExtra;
 
   // App();
 

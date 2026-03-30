@@ -48,9 +48,22 @@ struct SceneExtra {
   std::vector<Element> elements;
   int counts[5]{0};
 
-  enum struct State { ADD, REMOVE, CHANGE } state = State::ADD;
+  struct Config {
+    float radius = 32;
+    glm::vec2 velocity{};
+    ElementType type = ElementType::WOOD;
+  } config{}, changeConfig{};
+  glm::vec2 speedRange{50, 100};
+  glm::vec2 speedChangeRange{50, 100};
+  bool changeKeepVelocity = true;
 
-  const Ball *hovering = nullptr;
+  enum struct State { ADD, DELETE, CHANGE } state = State::ADD;
+  Ball preview{}, previewNext{};
+  int hoveringIndex = -1;
+  Element *hovering = nullptr;
+  bool placeable = false;
+  void updateHovering(const glm::ivec2 pos);
+  void updatePreview(const glm::ivec2 pos);
 
   SceneExtra();
 
@@ -58,4 +71,7 @@ struct SceneExtra {
   void update(const float dt);
 
   void onClick();
+
+  void clear();
+  void reset();
 };

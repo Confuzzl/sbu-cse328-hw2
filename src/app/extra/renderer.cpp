@@ -2,12 +2,6 @@
 
 #include "app/app.h"
 
-#if defined(_MSC_VER) && !defined(__clang__) // MSVC
-#define UNREACHABLE __assume(false);
-#else // GCC, Clang
-#define UNREACHABLE __builtin_unreachable();
-#endif
-
 static auto &getElementVBO(const SceneExtra::ElementType e) {
   static auto WOOD_VBO = GL::VBO::create<shaders::vertex_layout::circle>(
                   SceneExtra::MAX_ELEMENTS),
@@ -53,6 +47,29 @@ static GL::Texture &getElementTexture(const SceneExtra::ElementType e) {
   }
   UNREACHABLE;
 }
+static Color getElementColor(const SceneExtra::ElementType e) {
+  using E = SceneExtra::ElementType;
+  switch (e) {
+  case E::WOOD:
+    return GREEN;
+  case E::FIRE:
+    return RED;
+  case E::EARTH:
+    return 0x804000_rgb;
+  case E::METAL:
+    return YELLOW;
+  case E::WATER:
+    return BLUE;
+  }
+  UNREACHABLE;
+}
+
+static Color getComplementary(const Color c) {
+  const auto max = std::max(c.r, std::max(c.g, c.b));
+  const auto min = std::min(c.r, std::min(c.g, c.b));
+  const auto sum = max + min;
+  return Color{sum - c.r, sum - c.g, sum - c.b};
+}
 
 void RendererExtra::render(const float dt) { /*for (const auto &)*/
   // static auto FOO = GL::VBO::create<shaders::vertex_layout::circle>(1);
@@ -73,5 +90,32 @@ void RendererExtra::render(const float dt) { /*for (const auto &)*/
     const auto type = static_cast<SceneExtra::ElementType>(e);
     shaders.element.bindTexture(getElementTexture(type))
         .draw(GL_POINTS, getElementVBO(type));
+  }
+
+  static auto PREVIEW_VBO = GL::VBO::create<shaders::vertex_layout::circle>(1);
+  switch (scene.state) {
+  case SceneExtra::State::ADD: {
+    glPatchParameteri(GL_PATCH_VERTICES, shaders::tess::Circle::PATCH_SIZE);
+
+    PREVIEW_VBO.write(scene.previewNext.asVec3());
+    shaders.circle.setFragColor(BLACK).draw(GL_PATCHES, PREVIEW_VBO);
+
+    PREVIEW_VBO.write(scene.preview.asVec3());
+    shaders.circle.setFragColor(getElementColor(scene.config.type))
+        .draw(GL_PATCHES, PREVIEW_VBO);
+
+    break;
+  }
+  case SceneExtra::State::CHANGE:
+  case SceneExtra::State::DELETE: {
+    const auto hover = scene.hovering;
+    if (hover) {
+      PREVIEW_VBO.write(hover->asVec3());
+      shaders.circle
+          .setFragColor(getComplementary(getElementColor(hover->type)))
+          .draw(GL_PATCHES, PREVIEW_VBO);
+    }
+    break;
+  }
   }
 }

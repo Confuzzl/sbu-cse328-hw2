@@ -50,10 +50,6 @@ void SceneDefault::updateHovering(const glm::ivec2 pos) {
     }
   }
 }
-// const Scene::Ball *Scene::tryGetHovering() const {
-//  if (hovering == -1)
-//   return hovering == -1 ? nullptr : shapes[hovering];
-// }
 void SceneDefault::tryDeleteGeneric() {
   if (hoveringIndex == -1)
     return;

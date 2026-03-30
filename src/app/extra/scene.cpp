@@ -31,6 +31,7 @@ SceneExtra::ElementType SceneExtra::getGenerator(const ElementType E) {
   case ElementType::WATER:
     return ElementType::METAL;
   }
+  UNREACHABLE;
 }
 SceneExtra::ElementType SceneExtra::getDestroyer(const ElementType E) {
   switch (E) {
@@ -45,6 +46,7 @@ SceneExtra::ElementType SceneExtra::getDestroyer(const ElementType E) {
   case ElementType::WATER:
     return ElementType::EARTH;
   }
+  UNREACHABLE;
 }
 
 bool SceneExtra::Ball::operator==(const Ball &that) const {
@@ -59,31 +61,12 @@ bool SceneExtra::Element::operator==(const Element &that) const {
 }
 
 SceneExtra::SceneExtra() { elements.reserve(MAX_ELEMENTS); }
-void SceneExtra::initialize() {
-  static constexpr auto NUM_PER_ELEMENT = 8;
-  const float radius = app().framebufferSize.y / 2 - 50;
-  // const float ratio = static_cast<float>(app().framebufferSize.x) /
-  // app().framebufferSize.y;
-  const glm::vec2 offset = app().framebufferSize / 2;
-  static constexpr float thetaStep = 2 * 3.141592 / (5 * NUM_PER_ELEMENT);
-  float theta = 0;
-  for (int e = 0; e < 5; e++) {
-    counts[e] = NUM_PER_ELEMENT;
-    const auto type = static_cast<ElementType>(e);
-    for (int i = 0; i < NUM_PER_ELEMENT; i++) {
-      elements.emplace_back(
-          glm::vec2{std::cos(theta), std::sin(theta)} * radius + offset, 32,
-          random_vec2() * random_float(50.0f, 100.0f), type);
-
-      theta += thetaStep;
-    }
-  }
-
-  // elements.emplace_back(glm::vec2{0, 0}, 64, glm::vec2{5, 5},
-  //                       ElementType::EARTH);
-}
+void SceneExtra::initialize() { reset(); }
 
 void SceneExtra::update(const float dt) {
+  updatePreview(Cursor::gamePos);
+  updateHovering(Cursor::gamePos);
+
   for (auto &element : elements) {
     auto &pos = element.pos, &vel = element.vel;
     const auto rad = element.rad;
@@ -150,5 +133,96 @@ void SceneExtra::update(const float dt) {
     }
 
     pos += step;
+  }
+}
+
+void SceneExtra::updateHovering(const glm::ivec2 pos) {
+  hoveringIndex = -1;
+  hovering = nullptr;
+  for (auto i = 0; i < elements.size(); i++) {
+    const auto cpos = elements[i].pos;
+    const auto rad = elements[i].rad;
+    const auto r2 = rad * rad;
+    if (glm::distance2(glm::vec2{pos}, cpos) < r2) {
+      hoveringIndex = i;
+      hovering = &elements[i];
+      return;
+    }
+  }
+}
+void SceneExtra::updatePreview(const glm::ivec2 pos) {
+  preview = {pos, config.radius, config.velocity};
+  previewNext = preview + config.velocity * 0.1f;
+
+  if (elements.size() >= MAX_ELEMENTS) {
+    placeable = false;
+    return;
+  }
+
+  for (int i = 0; i < 2; i++) {
+    if (preview.pos[i] - preview.rad < 0 ||
+        preview.pos[i] + preview.rad > app().framebufferSize[i]) {
+      placeable = false;
+      return;
+    }
+  }
+  for (const auto &element : elements) {
+    if (preview.intersects(element)) {
+      placeable = false;
+      return;
+    }
+  }
+
+  placeable = true;
+}
+
+void SceneExtra::onClick() {
+  switch (state) {
+  case State::ADD: {
+    if (elements.size() >= MAX_ELEMENTS)
+      return;
+    if (placeable)
+      elements.emplace_back(Cursor::gamePos, config.radius, config.velocity,
+                            config.type);
+    break;
+  }
+  case State::DELETE: {
+    if (hoveringIndex == -1)
+      return;
+    elements.erase(elements.begin() + hoveringIndex);
+    break;
+  }
+  case State::CHANGE: {
+    if (hoveringIndex == -1)
+      return;
+    *hovering =
+        Element{hovering->pos, changeConfig.radius,
+                changeKeepVelocity ? hovering->vel : changeConfig.velocity,
+                changeConfig.type};
+    break;
+  }
+  }
+}
+
+void SceneExtra::clear() { elements.clear(); }
+void SceneExtra::reset() {
+  elements.clear();
+  static constexpr auto NUM_PER_ELEMENT = 8;
+  const float radius = app().framebufferSize.y / 2 - 50;
+  // const float ratio = static_cast<float>(app().framebufferSize.x) /
+  // app().framebufferSize.y;
+  const glm::vec2 offset = app().framebufferSize / 2;
+  static constexpr float thetaStep = 2 * 3.141592 / (5 * NUM_PER_ELEMENT);
+  float theta = 0;
+  for (int e = 0; e < 5; e++) {
+    counts[e] = NUM_PER_ELEMENT;
+    const auto type = static_cast<ElementType>(e);
+    for (int i = 0; i < NUM_PER_ELEMENT; i++) {
+      elements.emplace_back(
+          glm::vec2{std::cos(theta), std::sin(theta)} * radius + offset, 32,
+          random_vec2() * random_float(50.0f, 100.0f), type);
+
+      theta += thetaStep;
+    }
   }
 }
