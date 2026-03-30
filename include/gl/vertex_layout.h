@@ -13,14 +13,14 @@ namespace detail {
 // void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
 //                           const GLint size, const GLenum type,
 //                           const GLint offset);
-template <typename Integer,
-          std::enable_if_t<std::is_integral_v<Integer>, bool> = true>
-void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
-                          const GLint size, const GLenum type,
-                          const GLint offset) {
-  static_assert(false, "doesnt seem to work");
-  glVertexArrayAttribIFormat(vaoID, attrIndex, size, type, offset);
-}
+// template <typename Integer,
+//          std::enable_if_t<std::is_integral_v<Integer>, bool> = true>
+// void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
+//                          const GLint size, const GLenum type,
+//                          const GLint offset) {
+//  static_assert(false, "doesnt seem to work");
+//  glVertexArrayAttribIFormat(vaoID, attrIndex, size, type, offset);
+//}
 template <typename Float,
           std::enable_if_t<std::is_same_v<Float, GLfloat>, bool> = true>
 void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
@@ -28,13 +28,13 @@ void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
                           const GLint offset) {
   glVertexArrayAttribFormat(vaoID, attrIndex, size, type, false, offset);
 }
-template <typename Double,
-          std::enable_if_t<std::is_same_v<Double, GLdouble>, bool> = true>
-void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
-                          const GLint size, const GLenum type,
-                          const GLint offset) {
-  glVertexArrayAttribLFormat(vaoID, attrIndex, size, type, offset);
-}
+// template <typename Double,
+//           std::enable_if_t<std::is_same_v<Double, GLdouble>, bool> = true>
+// void attribFormatDispatch(const GLuint vaoID, const GLuint attrIndex,
+//                           const GLint size, const GLenum type,
+//                           const GLint offset) {
+//   glVertexArrayAttribLFormat(vaoID, attrIndex, size, type, offset);
+// }
 
 template <typename T>
 void enable_helper(const GLuint vaoID, GLuint &attrIndex, GLint &offset) {
