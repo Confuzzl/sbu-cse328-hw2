@@ -1,0 +1,23 @@
+#include "app/extra/renderer.h"
+
+#include "app/app.h"
+#include "app/extra/scene.h"
+
+void RendererExtra::render(const float dt) {
+  static auto SPECIES_A_VBO = GL::VBO::create<shaders::vertex_layout::circle>(
+      SceneExtra::MAX_ORGANISMS);
+  static auto SPECIES_B_VBO = GL::VBO::create<shaders::vertex_layout::circle>(
+      SceneExtra::MAX_ORGANISMS);
+
+  auto &scene = app().simExtra.scene;
+  auto &shaders = app().shaders;
+
+  for (const auto &organism : scene.organisms) {
+    (organism.species == SceneExtra::Species::A ? SPECIES_A_VBO : SPECIES_B_VBO)
+        .write(organism.asVec3());
+  }
+
+  glPatchParameteri(GL_PATCH_VERTICES, shaders.circle.tesselation.PATCH_SIZE);
+  shaders.circle.setFragColor(RED).draw(GL_PATCHES, SPECIES_A_VBO);
+  shaders.circle.setFragColor(GREEN).draw(GL_PATCHES, SPECIES_B_VBO);
+}

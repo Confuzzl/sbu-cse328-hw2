@@ -1,0 +1,12 @@
+#pragma once
+
+#include "gl/glsl_object.h"
+
+struct RendererExtra {
+  struct {
+  } shaders;
+
+  // RendererExtra();
+
+  void render(const float dt);
+};

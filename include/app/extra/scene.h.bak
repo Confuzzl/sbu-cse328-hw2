@@ -1,0 +1,82 @@
+#pragma once
+
+#include <glm/glm.hpp>
+
+#include "color.h"
+
+#include <vector>
+
+struct SceneExtra {
+  static constexpr auto MAX_ORGANISMS = 64;
+
+  struct Ball {
+    glm::vec2 pos{};
+    float rad = 0;
+    glm::vec2 vel{};
+
+    Ball() = default;
+    Ball(const Ball &) = default;
+    Ball(Ball &&) = default;
+    Ball &operator=(const Ball &) = default;
+    Ball &operator=(Ball &&) = default;
+
+    Ball(const glm::vec2 pos, const float rad, const glm::vec2 vel);
+
+    Ball operator+(const glm::vec2 t) const;
+
+    bool intersects(const Ball &that) const;
+
+    glm::vec3 asVec3() const { return {pos, rad}; }
+  };
+  enum struct Species { A, B };
+  struct Organism : Ball {
+    static constexpr float RADIUS_SIZE_RATIO = 10;
+
+    static int ID_COUNT;
+    int id;
+    Species species;
+
+    float size;
+    float minimumReproduceSize;
+    float age;
+    float minimumReproduceAge;
+
+    Organism(const glm::vec2 pos, const glm::vec2 vel, const Species species,
+             const float size, const float minimumReproduceSize,
+             const float minimumReproduceAge);
+
+    void addSize(const float s);
+
+    bool readyToReproduce() const {
+      return size >= minimumReproduceSize && age >= minimumReproduceAge;
+    }
+
+    Organism createChild(const glm::vec2 offset) const;
+    Organism reproduce();
+  };
+
+  std::vector<Organism> organisms;
+  unsigned int countA = 0, countB = 0;
+
+  enum struct State {
+    SPECIES_A,
+    SPECIES_B,
+    DELETE,
+  } state = State::SPECIES_A;
+
+  struct Config {
+    glm::vec2 speedRange;
+    glm::vec2 sizeRange;
+    glm::vec2 minimumReproduceSizeRange;
+    glm::vec2 minimumReproduceAgeRange;
+  } config;
+
+  SceneExtra();
+
+  void update(const float dt);
+
+  void spawn(const Species s);
+  void onClick();
+
+  void clear();
+};
