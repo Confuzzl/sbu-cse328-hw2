@@ -172,18 +172,18 @@ static auto lastConfigWrite() {
 void SceneDefault::updateDefaultConfig() {
   static std::filesystem::file_time_type lastWrite{};
   const auto update = lastConfigWrite();
-  if (update > lastWrite) {
-    print_info("CONFIG FILE UPDATED");
+  // if (update > lastWrite) {
+  //   print_info("CONFIG FILE UPDATED");
 
-    std::ifstream file{CONFIG_PATH};
-    Config config{};
-    file >> defaultConfig.radius >> defaultConfig.velocity.x >>
-        defaultConfig.velocity.y;
-    defaultSuccess = static_cast<bool>(file);
-    if (!file) {
-      print_err("ERROR READING config.txt");
-      defaultConfig = FALLBACK_CONFIG;
-    }
-    lastWrite = update;
+  std::ifstream file{CONFIG_PATH};
+  Config config{};
+  file >> defaultConfig.radius >> defaultConfig.velocity.x >>
+      defaultConfig.velocity.y;
+  defaultSuccess = static_cast<bool>(file);
+  if (!file) {
+    print_err("ERROR READING config.txt");
+    defaultConfig = FALLBACK_CONFIG;
   }
+  lastWrite = update;
+  //}
 }

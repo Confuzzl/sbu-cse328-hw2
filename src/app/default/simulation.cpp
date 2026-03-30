@@ -69,8 +69,8 @@ void SimulationDefault::drawSideBarImpl() {
   ImGui::SameLine();
   ImGui::RadioButton("custom", &configType, 1);
   scene.configMode = static_cast<SceneDefault::ConfigMode>(configType);
-  switch (configType) {
-  case 0: {
+  switch (scene.configMode) {
+  case SceneDefault::ConfigMode::DEFAULT: {
     scene.updateDefaultConfig();
     ImGui::BeginDisabled();
     ImGui::InputFloat("radius", &scene.defaultConfig.radius);
@@ -87,7 +87,7 @@ void SimulationDefault::drawSideBarImpl() {
     }
     break;
   }
-  case 1: {
+  case SceneDefault::ConfigMode::CUSTOM: {
     if (scene.customConfig.radius == 0) { // unset
       scene.customConfig = scene.defaultConfig;
     }

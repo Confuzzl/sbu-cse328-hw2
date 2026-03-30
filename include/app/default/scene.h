@@ -47,7 +47,7 @@ struct SceneDefault {
     glm::vec2 velocity;
   } defaultConfig{}, customConfig{};
   static constexpr Config FALLBACK_CONFIG{100, {0, -200}};
-  bool defaultSuccess = false;
+  bool defaultSuccess = true;
 
   enum struct State {
     BALL,
